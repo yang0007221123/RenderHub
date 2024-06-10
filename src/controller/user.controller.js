@@ -6,12 +6,8 @@ const userService = require("../service/user.service")
 class UserController {
   // 用户注册
   async registerUser(ctx, next) {
-    const userInfo = ctx.body;
-    
-    // 将用户注册信息存入数据库
-    const result = await userService.saveRegisterUser(userInfo);
-    console.log("registerUser", result);
-    
+    const userInfo = ctx.request.body;
+    const result = await userService.saveRegisterUser(userInfo); // 将用户注册信息存入数据库
     // 告知客户端用户注册结果
     ctx.body = {
       code: 200,

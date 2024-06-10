@@ -1,3 +1,7 @@
+/**
+ * @description: 统一处理接口请求的错误信息返回
+ */
+
 const app = require("../app/index");
 const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_ALREADY_EXISTS} = require("../config/errorEnum");
 
@@ -12,7 +16,7 @@ app.on("error", (err, ctx) => {
       message = "用户名或者密码不能为空"
       break;
     case USERNAME_IS_ALREADY_EXISTS:
-      code = -1001;
+      code = -1002;
       message = "用户名已经存在";
       break;
     default:
