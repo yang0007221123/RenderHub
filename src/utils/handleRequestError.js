@@ -3,7 +3,7 @@
  */
 
 const app = require("../app/index");
-const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_ALREADY_EXISTS} = require("../config/errorEnum");
+const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_ALREADY_EXISTS, USERNAME_IS_NOT_EXISTS, PASSWORD_IS_ERROR} = require("../config/errorEnum");
 
 // 监听项目的错误事件
 app.on("error", (err, ctx) => {
@@ -18,6 +18,14 @@ app.on("error", (err, ctx) => {
     case USERNAME_IS_ALREADY_EXISTS:
       code = -1002;
       message = "用户名已经存在";
+      break;
+    case USERNAME_IS_NOT_EXISTS:
+      code = -1003;
+      message = "用户名不存在";
+      break;
+    case PASSWORD_IS_ERROR:
+      code = -1004;
+      message = "密码不正确";
       break;
     default:
       break;

@@ -14,8 +14,8 @@ class UserService {
     return result;
   }
   
-  // 用户注册--查询注册时的用户名是否已经存在
-  async checkRegisterUserName(username) {
+  // 查询用户名是否已存在
+  async findUserName(username) {
     const statement = "SELECT * FROM `user` WHERE username = ?;"
     const [result] = await connection.execute(statement, [username]);
     // console.log("checkUserName", result);
