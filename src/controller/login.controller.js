@@ -1,5 +1,5 @@
 /**
- * @description: 登录模块
+ * @description: 登录相关
  */
 const {sign} = require("jsonwebtoken");
 const {PRIVATE_KEY} = require("../config/secretKey");
@@ -11,11 +11,10 @@ class LoginController {
     try {
       // 1. 使用sign方法生成token
       const token = sign({id, username}, PRIVATE_KEY, {
-          expiresIn: 2 * 60 * 60,  // 过期时间
-          algorithm: "RS256" // 加密方式
-        }
-      )
-      ctx.body = {code: 200, token}
+        expiresIn: 12 * 60 * 60,  // 12hours过期
+        algorithm: "RS256" // 加密方式
+      })
+      ctx.body = {code: 200, message: "成功", data: {token}};
     } catch (e) {
       console.log("err-issueToken", e);
     }

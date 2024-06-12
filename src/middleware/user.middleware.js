@@ -2,7 +2,9 @@ const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_ALREADY_EXISTS} = require("../c
 const {findUserName} = require("../service/user.service");
 const {encryptPassword} = require("../utils/handleEncrypt");
 
-// 校验用户注册请求
+/**
+ * @description: 校验用户注册请求
+ */
 async function verifyResister(ctx, next) {
   // 1.获取请求信息
   const userInfo = ctx.request.body;
@@ -23,7 +25,9 @@ async function verifyResister(ctx, next) {
   await next(); // 执行后续代码
 }
 
-// 加密用户密码
+/**
+ * @description: 加密用户密码
+ */
 async function handleEncrypt(ctx, next) {
   const {password} = ctx.request.body;
   ctx.request.body.password = encryptPassword(password);

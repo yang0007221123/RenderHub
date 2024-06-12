@@ -3,7 +3,15 @@
  */
 
 const app = require("../app/index");
-const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_ALREADY_EXISTS, USERNAME_IS_NOT_EXISTS, PASSWORD_IS_ERROR} = require("../config/errorEnum");
+const {
+  USERNAME_OR_PASSWORD_IS_NULL,
+  USERNAME_IS_ALREADY_EXISTS,
+  USERNAME_IS_NOT_EXISTS,
+  PASSWORD_IS_ERROR,
+  TOKEN_IS_INVALID,
+  CONTENT_IS_EMPTY,
+  USER_IS_NOT_EXISTS
+} = require("../config/errorEnum");
 
 // 监听项目的错误事件
 app.on("error", (err, ctx) => {
@@ -13,7 +21,7 @@ app.on("error", (err, ctx) => {
   switch (err) {
     case USERNAME_OR_PASSWORD_IS_NULL:
       code = -1001;
-      message = "用户名或者密码不能为空"
+      message = "用户名或者密码不能为空";
       break;
     case USERNAME_IS_ALREADY_EXISTS:
       code = -1002;
@@ -26,6 +34,18 @@ app.on("error", (err, ctx) => {
     case PASSWORD_IS_ERROR:
       code = -1004;
       message = "密码不正确";
+      break;
+    case TOKEN_IS_INVALID:
+      code = -1005;
+      message = "token无效";
+      break;
+    case CONTENT_IS_EMPTY:
+      code = -1006;
+      message = "发表内容不能为空";
+      break;
+    case USER_IS_NOT_EXISTS:
+      code = -1007;
+      message = "该用户不存在";
       break;
     default:
       break;

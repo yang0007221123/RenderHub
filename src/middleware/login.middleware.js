@@ -1,7 +1,12 @@
-const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_NOT_EXISTS} = require("../config/errorEnum");
+const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_NOT_EXISTS, TOKEN_IS_INVALID} = require("../config/errorEnum");
 const {findUserName} = require("../service/user.service");
 const {encryptPassword} = require("../utils/handleEncrypt");
+const {verify, decode} = require("jsonwebtoken");
+const {PUBLIC_KEY} = require("../config/secretKey");
 
+/**
+ * @description: 校验登录请求
+ */
 async function verifyLogin(ctx, next) {
   const {username, password} = ctx.request.body;
   
@@ -22,10 +27,35 @@ async function verifyLogin(ctx, next) {
   }
   
   // 4.签发token
-  ctx.userInfo = userInfo; // 提供给下一个中间件使用
+  ctx.userInfo = userInfo[0]; // 提供给下一个中间件使用
   await next();
 }
 
+/**
+ * @description: 校验token
+ */
+async function checkToken(ctx, next) {
+  const token = ctx.headers.token;  // token放在headers中
+  // console.log("token", token);
+  if (!token) {
+    return ctx.app.emit("error", TOKEN_IS_INVALID, ctx);
+  }
+  try {
+    // 只要token校验失败或者无效，都会抛出异常
+    const result = verify(token, PUBLIC_KEY, {algorithm: ["RS256"], complete: true});
+    // console.log("result", result);
+    const {payload} = result;
+    ctx.userInfo = {id: payload.id, username: payload.username}; // 提供给后续中间件使用
+    ctx.body = {code: 200, message: "成功"};
+  } catch (e) {
+    console.log("err-checkToken", e);
+    return ctx.app.emit("error", TOKEN_IS_INVALID, ctx);
+  }
+  await next();
+}
+
+
 module.exports = {
-  verifyLogin
+  verifyLogin,
+  checkToken
 }
