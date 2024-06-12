@@ -45,7 +45,7 @@ async function checkToken(ctx, next) {
     const result = verify(token, PUBLIC_KEY, {algorithm: ["RS256"], complete: true});
     // console.log("result", result);
     const {payload} = result;
-    ctx.userInfo = {id: payload.id, username: payload.username}; // 提供给后续中间件使用
+    ctx.userInfo = {id: payload.id, username: payload.username};  /* useId直接放在ctx身上，以供后续中间件使用 */
     ctx.body = {code: 200, message: "成功"};
   } catch (e) {
     console.log("err-checkToken", e);

@@ -7,7 +7,6 @@ const {USER_IS_NOT_EXISTS} = require("../config/errorEnum");
 class MomentController {
   /**
    * @description:  发表动态
-   
    */
   async createMoment(ctx, next) {
     const {id} = ctx.userInfo;
@@ -48,6 +47,28 @@ class MomentController {
     const {limit, offset} = ctx;
     const result = await momentService.getContentListForOneUser(userId, limit, offset);
     ctx.body = {code: 200, message: "成功", contentList: result};
+  }
+  
+  /**
+   * @description: 修改动态内容content
+   */
+  async modifyOneContent(ctx, next) {
+    const {content, contentId} = ctx.request.body;
+    const result = await momentService.modifyContentById(contentId, content);
+    if (result) {
+      ctx.body = {code: 200, message: "成功", data: result}
+    }
+  }
+  
+  /**
+   * @description: 删除动态 基于contentId
+   */
+  async deleteOneContent(ctx, next) {
+    const {contentId} = ctx.request.body;
+    const result = await momentService.deleteContentById(contentId);
+    if (result) {
+      ctx.body = {code: 200, message: "成功", data: result}
+    }
   }
 }
 

@@ -70,6 +70,45 @@ class MomentService {
       console.log("err-getContentList", e);
     }
   }
+  
+  /**
+   * @description: 校验用户是否有权限修改某条动态
+   */
+  async checkModifyPermission(contentId, userId) {
+    try {
+      const statement = "SELECT * FROM moment WHERE id = ? AND user_id = ?;";
+      const [result] = await connection.execute(statement, [contentId, userId]);
+      return !!result.length;
+    } catch (e) {
+      console.log("err-checkModifyPermission", e);
+    }
+  }
+  
+  /**
+   * @description: 修改某个用户的某条动态
+   */
+  async modifyContentById(contentId, content) {
+    try {
+      const statement = "UPDATE moment SET content = ? WHERE id = ?; ";
+      const [result] = await connection.execute(statement, [content, contentId]);
+      return result;
+    } catch (e) {
+      console.log("err-modifyContentBrId", e);
+    }
+  }
+  
+  /**
+   * @description: 修改某个用户的某条动态
+   */
+  async deleteContentById(contentId) {
+    try {
+      const statement = "DELETE FROM moment WHERE id = ?;";
+      const [result] = await connection.execute(statement, [contentId]);
+      return result;
+    } catch (e) {
+      console.log("err-deleteContentById", e);
+    }
+  }
 }
 
 module.exports = new MomentService();

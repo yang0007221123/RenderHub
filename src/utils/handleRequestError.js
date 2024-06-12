@@ -41,7 +41,7 @@ app.on("error", (err, ctx) => {
       break;
     case CONTENT_IS_EMPTY:
       code = -1006;
-      message = "发表内容不能为空";
+      message = "动态内容不能为空";
       break;
     case USER_IS_NOT_EXISTS:
       code = -1007;
