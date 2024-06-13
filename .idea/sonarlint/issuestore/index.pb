@@ -66,3 +66,11 @@ P
  src/service/queryById.service.js,c\f\cfda2ff7f4616dd6afbeaff468d33679ec165a1e
 Q
 !src/service/permission.service.js,a\d\ad524756aa24df2e0d295fc673f465fe35ca1609
+J
+src/router/label.router.js,5\e\5ee38246e9681480201ff61aeae13e3da0864e2d
+R
+"src/middleware/label.middleware.js,2\f\2feed408f6073848f6034e89e6ce6a348bfc489a
+R
+"src/controller/label.controller.js,1\3\1374a5b293b56dcca3199cc241197fc31ce5f76c
+L
+src/service/label.service.js,6\d\6d4e4d1cec012a9b5e8761666eef535e65b53504
