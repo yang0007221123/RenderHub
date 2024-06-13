@@ -46,15 +46,23 @@ Q
 !src/middleware/page.middleware.js,c\f\cf049ac307e531d059506f6ec953a5876e55e4a8
 C
 src/router/index.js,0\5\05dc69393f11c15b01b3283d5d501694c999875c
-I
-src/router/loginRouter.js,8\f\8fd558c5ba69dcd49622a9311b352e08c9ead235
 K
 src/router/moment.router.js,3\7\370f26b60a82826024e70dcfbcfc7d611607d3a6
-H
-src/router/userRouter.js,2\2\22072ef1e8f1a0a722ebdb2584df9a5b517f918f
 M
 src/service/moment.service.js,e\2\e255280d9d0696da793ef782829c71da128c668c
 J
 src/router/login.router.js,c\d\cd7879d0df7847fed5772c2918ff8a04386fb610
 I
 src/router/user.router.js,f\7\f71f5453757593f649c26203285c710c4ae3970d
+T
+$src/controller/comment.controller.js,5\8\58dd444e942417eb8c3d23acbf307947e1c1c991
+T
+$src/middleware/comment.middleware.js,0\9\09dbc8b11fb15e2a53964c9e57771cc285707088
+L
+src/router/comment.router.js,5\b\5b5dff40edc47ea86982b7c638ea5eeea0f05b98
+N
+src/service/comment.service.js,e\4\e4aadc1c628b0974076ceafbf585882a001b9eb7
+P
+ src/service/queryById.service.js,c\f\cfda2ff7f4616dd6afbeaff468d33679ec165a1e
+Q
+!src/service/permission.service.js,a\d\ad524756aa24df2e0d295fc673f465fe35ca1609

@@ -1,5 +1,5 @@
 const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_NOT_EXISTS, TOKEN_IS_INVALID} = require("../config/errorEnum");
-const {findUserName} = require("../service/user.service");
+const userService = require("../service/user.service");
 const {encryptPassword} = require("../utils/handleEncrypt");
 const {verify, decode} = require("jsonwebtoken");
 const {PUBLIC_KEY} = require("../config/secretKey");
@@ -16,7 +16,7 @@ async function verifyLogin(ctx, next) {
   }
   
   // 2.用户名是否存在
-  const userInfo = await findUserName(username);
+  const userInfo = await userService.findUserName(username);
   if (!userInfo.length) {
     return ctx.app.emit("error", USERNAME_IS_NOT_EXISTS, ctx);
   }
@@ -36,16 +36,14 @@ async function verifyLogin(ctx, next) {
  */
 async function checkToken(ctx, next) {
   const token = ctx.headers.token;  // token放在headers中
-  // console.log("token", token);
   if (!token) {
     return ctx.app.emit("error", TOKEN_IS_INVALID, ctx);
   }
   try {
     // 只要token校验失败或者无效，都会抛出异常
     const result = verify(token, PUBLIC_KEY, {algorithm: ["RS256"], complete: true});
-    // console.log("result", result);
     const {payload} = result;
-    ctx.userInfo = {id: payload.id, username: payload.username};  /* useId直接放在ctx身上，以供后续中间件使用 */
+    ctx.userInfo = {userId: payload.id, userName: payload.username};  /* userId、userName直接放在ctx身上，以供后续中间件使用 */
     ctx.body = {code: 200, message: "成功"};
   } catch (e) {
     console.log("err-checkToken", e);

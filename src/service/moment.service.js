@@ -28,7 +28,7 @@ class MomentService {
   }
   
   /**
-   * @description:获取动态列表
+   * @description: 分页获取动态列表
    */
   async getContentList(limit, offset) {
     console.log("limit-offset", limit, offset);
@@ -36,7 +36,8 @@ class MomentService {
       const statement = `
       SELECT
         m.id contentId, m.content content, m.createTime createTime, m.updateTime updateTime,
-      JSON_OBJECT("userId",u.id, "username", u.username) AS userInfo
+      JSON_OBJECT("userId",u.id, "username", u.username) AS userInfo,
+      (SELECT COUNT(*) FROM \`comment\` WHERE comment.moment_id = m.id) commentCount
       FROM moment AS m
       LEFT JOIN USER AS u
       ON m.user_id = u.id
@@ -72,25 +73,12 @@ class MomentService {
   }
   
   /**
-   * @description: 校验用户是否有权限修改某条动态
-   */
-  async checkModifyPermission(contentId, userId) {
-    try {
-      const statement = "SELECT * FROM moment WHERE id = ? AND user_id = ?;";
-      const [result] = await connection.execute(statement, [contentId, userId]);
-      return !!result.length;
-    } catch (e) {
-      console.log("err-checkModifyPermission", e);
-    }
-  }
-  
-  /**
    * @description: 修改某个用户的某条动态
    */
-  async modifyContentById(contentId, content) {
+  async modifyContentById(momentId, content) {
     try {
       const statement = "UPDATE moment SET content = ? WHERE id = ?; ";
-      const [result] = await connection.execute(statement, [content, contentId]);
+      const [result] = await connection.execute(statement, [content, momentId]);
       return result;
     } catch (e) {
       console.log("err-modifyContentBrId", e);
@@ -98,15 +86,41 @@ class MomentService {
   }
   
   /**
-   * @description: 修改某个用户的某条动态
+   * @description: 删除某个用户的某条动态
    */
-  async deleteContentById(contentId) {
+  async deleteContentById(momentId) {
     try {
       const statement = "DELETE FROM moment WHERE id = ?;";
-      const [result] = await connection.execute(statement, [contentId]);
+      const [result] = await connection.execute(statement, [momentId]);
       return result;
     } catch (e) {
       console.log("err-deleteContentById", e);
+    }
+  }
+  
+  /**
+   * @description: 查看某条动态的详情
+   */
+  async viewMomentDetail(momentId) {
+    try {
+      const statement = `
+        SELECT
+          m.id momentId, m.content content, m.createTime createTime, m.updateTime updateTime,
+          JSON_OBJECT("userId", u.id, "userName", u.username) userInfo,
+          JSON_ARRAYAGG(
+            JSON_OBJECT("commentId", c.id, "content", c.content, "userInfo", JSON_OBJECT("userId", u2.id, "userName", u2.username))
+          ) comments
+        FROM moment m
+        LEFT JOIN user u ON m.user_id = u.id
+        LEFT JOIN comment c ON m.id = c.moment_id
+        LEFT JOIN user u2 ON c.user_id = u2.id
+        WHERE m.id = ?
+        GROUP BY m.id;
+      `;
+      const [result] = await connection.execute(statement, [momentId]);
+      return result;
+    } catch (e) {
+      console.log("err-viewMomentDetail", e);
     }
   }
 }

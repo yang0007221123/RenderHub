@@ -12,6 +12,7 @@ class LoginController {
       // 1. 使用sign方法生成token
       const token = sign({id, username}, PRIVATE_KEY, {
         expiresIn: 12 * 60 * 60,  // 12hours过期
+        // expiresIn: 30,  // 30s过期
         algorithm: "RS256" // 加密方式
       })
       ctx.body = {code: 200, message: "成功", data: {token}};
