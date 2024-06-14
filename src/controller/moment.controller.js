@@ -1,29 +1,35 @@
 const momentService = require("../service/moment.service");
-const {USER_IS_NOT_EXISTS} = require("../config/errorEnum");
 const queryByIdService = require("../service/queryById.service");
+const labelService = require("../service/label.service");
+const {getIdListByInsertResult} = require("../utils/handleMysqlData");
+const sendResponse = require("../utils/sendResponse");
 
 /**
  * @description: 动态相关
  */
 class MomentController {
   /**
-   * @description:  发表动态
+   * @description:  发表动态---发表动态的同时需要将新标签入库，并且保存moment与label的关系数据
    */
   async createMoment(ctx, next) {
-    console.log("ctx.userInf", ctx.userInfo);
-    const {userId} = ctx.userInfo;
-    // 1.userId是否存在
-    const res = await momentService.checkUserId(userId); // 校验userId是否存在
-    if (!res?.length) {
-      return ctx.app.emit("error", USER_IS_NOT_EXISTS, ctx);
+    // todo 需要用事务优化
+    // 1.动态内容入库，获取到momentId
+    const result = await momentService.createMoment(ctx.userInfo.userId, ctx.request.body.content); // 动态内容入库
+    const momentId = result.insertId;
+    
+    // 2.标签列表入库
+    let insertLabelIdList = []; // 新入库的标签的id
+    if (!!ctx.saveLabelStrList?.length) {
+      const insertResult = await labelService.createLabel(ctx.saveLabelStrList);
+      insertLabelIdList = getIdListByInsertResult(insertResult);
     }
-    // 2.内容入库
-    const result = await momentService.createMoment(userId, ctx.request.body.content); // 动态内容入库
-    if (result) {
-      ctx.body = {code: 200, message: "成功", data: result};
-      return;
+    
+    // 3.保存moment与label的关系数据
+    const totalLabelIdList = [...ctx.existsIdList, ...insertLabelIdList];
+    const res = await momentService.momentAddLabel(momentId, totalLabelIdList);
+    if (res) {
+      return sendResponse(ctx, 200, "success", "成功");
     }
-    ctx.body = {code: 0, message: "动态发布失败", data: result};
   }
   
   /**
@@ -32,7 +38,7 @@ class MomentController {
   async getList(ctx, next) {
     const {limit, offset} = ctx;
     const result = await momentService.getContentList(limit, offset);
-    ctx.body = {code: 200, message: "成功", contentList: result};
+    sendResponse(ctx, 200, "success", "成功", result);
   }
   
   /**
@@ -42,13 +48,12 @@ class MomentController {
     const {userId} = ctx.request.body;
     // 1. userId是否传入
     if (!userId) {
-      ctx.body = {code: 0, message: "未传入用户id"};
-      return;
+      return sendResponse(ctx, 400, "fail", "未传入用户id");
     }
     // 2.开始查询数据
     const {limit, offset} = ctx;
     const result = await momentService.getContentListForOneUser(userId, limit, offset);
-    ctx.body = {code: 200, message: "成功", contentList: result};
+    sendResponse(ctx, 200, "success", "成功", result);
   }
   
   /**
@@ -58,7 +63,7 @@ class MomentController {
     const {content, momentId} = ctx.request.body;
     const result = await momentService.modifyContentById(momentId, content);
     if (result) {
-      ctx.body = {code: 200, message: "成功", data: result}
+      sendResponse(ctx, 200, "success", "成功");
     }
   }
   
@@ -69,7 +74,7 @@ class MomentController {
     const {momentId} = ctx.request.body;
     const result = await momentService.deleteContentById(momentId);
     if (result) {
-      ctx.body = {code: 200, message: "成功", data: result}
+      sendResponse(ctx, 200, "success", "成功", result);
     }
   }
   
@@ -80,16 +85,16 @@ class MomentController {
     const {momentId} = ctx.request.body;
     // 1.校验传参
     if (!momentId) {
-      return ctx.body = {code: 0, message: "参数momentId缺失"};
+      return sendResponse(ctx, 400, "fail", "参数momentId缺失");
     }
     // 2.查询动态是否存在
     const isExists = await queryByIdService.queryById("moment", momentId);
     if (!isExists) {
-      return ctx.body = {code: 0, message: "该动态不存在"};
+      return sendResponse(ctx, 400, "fail", "该动态不存在");
     }
     // 3.数据库查询动态的详情
     const result = await momentService.viewMomentDetail(momentId);
-    ctx.body = {code: 200, message: "成功", data: result};
+    sendResponse(ctx, 200, "success", "成功", result);
   }
 }
 

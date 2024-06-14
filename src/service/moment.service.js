@@ -15,6 +15,20 @@ class MomentService {
   }
   
   /**
+   * @description: 给 内容moment 批量添加 标签label的id
+   */
+  async momentAddLabel(momentId, idList) {
+    try {
+      const values = idList.map(labelId => `(${momentId}, ${labelId})`).join(', ');
+      const statement = `INSERT INTO moment_label (moment_id, label_id) VALUES ${values}`;
+      const [result] = await connection.execute(statement);
+      return result;
+    } catch (e) {
+      console.log("err-momentAddLabel", e);
+    }
+  }
+  
+  /**
    * @description: 校验userId是否存在
    */
   async checkUserId(userId) {

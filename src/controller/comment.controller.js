@@ -1,4 +1,5 @@
 const commentService = require("../service/comment.service");
+const sendResponse = require("../utils/sendResponse");
 
 class CommentController {
   /**
@@ -14,7 +15,7 @@ class CommentController {
     }
     const result = await commentService.saveComment(userId, content, momentId, commentId);
     if (result) {
-      ctx.body = {code: 200, message: "成功"};
+      sendResponse(ctx, 200, "success", "成功");
     }
   }
 }

@@ -1,14 +1,26 @@
 const labelService = require("../service/label.service");
+const sendResponse = require("../utils/sendResponse");
 
 class LabelController {
   /**
    * @description: 创建标签
    */
   async createLabel(ctx, next) {
-    const {label} = ctx.request.body;
-    const result = await labelService.createLabel(label);
+    const {labelList} = ctx.request.body;
+    const result = await labelService.createLabel(labelList);
     if (result) {
-      ctx.body = {code: 200, message: "成功"};
+      sendResponse(ctx, 200, "success", "成功");
+    }
+  }
+  
+  /**
+   * @description: 删除标签
+   */
+  async deleteLabel(ctx, next) {
+    const {idList} = ctx.request.body;
+    const result = await labelService.deleteLabelByIds(idList);
+    if (result) {
+      sendResponse(ctx, 200, "success", "成功");
     }
   }
 }

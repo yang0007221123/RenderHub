@@ -3,6 +3,7 @@
  */
 const {sign} = require("jsonwebtoken");
 const {PRIVATE_KEY} = require("../config/secretKey");
+const sendResponse = require("../utils/sendResponse");
 
 class LoginController {
   // 签发token
@@ -15,7 +16,7 @@ class LoginController {
         // expiresIn: 30,  // 30s过期
         algorithm: "RS256" // 加密方式
       })
-      ctx.body = {code: 200, message: "成功", data: {token}};
+      sendResponse(ctx, 200, "success", "成功", {token});
     } catch (e) {
       console.log("err-issueToken", e);
     }

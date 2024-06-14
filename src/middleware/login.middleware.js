@@ -1,8 +1,9 @@
 const {USERNAME_OR_PASSWORD_IS_NULL, USERNAME_IS_NOT_EXISTS, TOKEN_IS_INVALID} = require("../config/errorEnum");
 const userService = require("../service/user.service");
 const {encryptPassword} = require("../utils/handleEncrypt");
-const {verify, decode} = require("jsonwebtoken");
+const {verify} = require("jsonwebtoken");
 const {PUBLIC_KEY} = require("../config/secretKey");
+const sendResponse = require("../utils/sendResponse");
 
 /**
  * @description: 校验登录请求
@@ -44,7 +45,7 @@ async function checkToken(ctx, next) {
     const result = verify(token, PUBLIC_KEY, {algorithm: ["RS256"], complete: true});
     const {payload} = result;
     ctx.userInfo = {userId: payload.id, userName: payload.username};  /* userId、userName直接放在ctx身上，以供后续中间件使用 */
-    ctx.body = {code: 200, message: "成功"};
+    sendResponse(ctx, 200, "success", "成功");
   } catch (e) {
     console.log("err-checkToken", e);
     return ctx.app.emit("error", TOKEN_IS_INVALID, ctx);
